@@ -1,7 +1,7 @@
 FROM alpine:3.12.0
 
 ARG TERRAFORM_VERSION=0.12.26
-ARG HELM_VERSION=v3.2.1
+ARG HELM_VERSION=3.2.1
 ARG KUBECTL_VERSION=1.18.0
 ARG SOPS_VERSION=3.5.0
 
@@ -23,7 +23,7 @@ RUN wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL
 
 #Install helm
 
-RUN wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm && \
+RUN wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helm
 
 #Install SOPS

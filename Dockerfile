@@ -7,7 +7,7 @@ ARG SOPS_VERSION=3.5.0
 
 #Download and install Terraform
 RUN apk update && \
-    apk add curl jq python3 bash ca-certificates git openssl unzip wget go && \
+    apk add curl jq python3 bash ca-certificates git openssl unzip wget go git-lfs && \
     cd /tmp && \
     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin 

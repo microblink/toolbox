@@ -1,4 +1,4 @@
-FROM alpine:3.12.0
+FROM debian:buster-slim
 
 ARG TERRAFORM_VERSION=0.12.26
 ARG HELM_VERSION=3.2.1
@@ -6,17 +6,18 @@ ARG KUBECTL_VERSION=1.18.0
 ARG SOPS_VERSION=3.5.0
 
 #Download and install Terraform
-RUN apk update && \
-    apk add curl jq python3 bash ca-certificates git openssl unzip wget go git-lfs && \
+RUN apt update && \
+    apt install -y curl jq python3 bash ca-certificates git openssl unzip wget golang git-lfs && \
     cd /tmp && \
     wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
     unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/bin 
 
 #Install google cloud SDK
-RUN curl -sSL https://sdk.cloud.google.com | bash
-
-ENV PATH $PATH:/root/google-cloud-sdk/bin
-
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    apt-get install -y apt-transport-https gnupg && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
+    apt-get update && apt-get install google-cloud-sdk -y
+    
 #Install kubectl
 RUN wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl 
@@ -28,15 +29,19 @@ RUN wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | 
 
 #Install SOPS
 
-RUN export GOPATH=~/go && \
-    go get -u go.mozilla.org/sops/v3/cmd/sops && \
-    ln -s $GOPATH/bin/sops /usr/local/bin/
+RUN export GOPATH="$HOME/go" && \
+    wget https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
+    dpkg -i sops_${SOPS_VERSION}_amd64.deb
+
 #Install docker
 
-RUN apk add --update docker openrc && \
-    rc-update add docker boot 
+RUN apt install -y gnupg2 software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
+    apt update && apt install -y docker-ce 
 
 #Clean up
-RUN rm -rf /tmp/* && \
-    rm -rf /var/cache/apk/* && \
+RUN apt autoremove && \
+    apt clean && \
+    rm -rf /tmp/* && \
     rm -rf /var/tmp/*

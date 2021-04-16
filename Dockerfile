@@ -22,12 +22,20 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 RUN wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl 
 
+#Install aws cli
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm awscliv2.zip
+
 #Install helm
 
 RUN wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helm
 
 #Install helm s3
+
 RUN helm plugin install https://github.com/hypnoglow/helm-s3.git
 
 #Install SOPS

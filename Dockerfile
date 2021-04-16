@@ -1,9 +1,9 @@
 FROM debian:buster-slim
 
-ARG TERRAFORM_VERSION=0.12.26
-ARG HELM_VERSION=3.2.1
-ARG KUBECTL_VERSION=1.18.0
-ARG SOPS_VERSION=3.5.0
+ARG TERRAFORM_VERSION=0.15.0
+ARG HELM_VERSION=3.5.4
+ARG KUBECTL_VERSION=1.21.0
+ARG SOPS_VERSION=3.7.1
 
 #Download and install Terraform
 RUN apt update && \
@@ -26,6 +26,9 @@ RUN wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL
 
 RUN wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helm
+
+#Install helm s3
+RUN helm plugin install https://github.com/hypnoglow/helm-s3.git
 
 #Install SOPS
 

@@ -47,6 +47,14 @@ RUN apt install -y gnupg2 software-properties-common && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
     apt update && apt install -y docker-ce 
 
+#Install postgresql client 
+RUN apt install -y postgresql-client
+
+# Install mongodb 
+RUN wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian10-x86_64-100.3.1.deb && \
+    dpkg -i mongodb-database-tools-debian10-x86_64-100.3.1.deb && \
+    rm mongodb-database-tools-debian10-x86_64-100.3.1.deb
+    
 #Clean up
 RUN apt autoremove && \
     apt clean && \

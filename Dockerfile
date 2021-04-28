@@ -22,11 +22,6 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 RUN wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/kubectl 
 
-#Instal gcloud 
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && \
-    apt-get install google-cloud-sdk -y
-
 #Install aws cli
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
@@ -43,7 +38,8 @@ RUN helm plugin install https://github.com/hypnoglow/helm-s3.git
 #Install SOPS
 RUN export GOPATH="$HOME/go" && \
     wget https://github.com/mozilla/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
-    dpkg -i sops_${SOPS_VERSION}_amd64.deb
+    dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
+    rm sops_${SOPS_VERSION}_amd64.deb
 
 #Install docker
 RUN apt install -y gnupg2 software-properties-common && \
